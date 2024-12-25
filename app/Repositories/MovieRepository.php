@@ -26,18 +26,5 @@ class MovieRepository extends AbstractRepository
     {
         return new MovieQueryBuilder();
     }
-
-    public function findById($id)
-    {
-        return Movie::with('genres')->find($id);  // Используем метод findById из MovieQueryBuilder
-    }
-
-    public function getRecommendedMovies()
-    {
-        // Сортируем фильмы по популярности (можно добавить другие критерии)
-        return Movie::orderBy('popularity', 'desc')
-            ->take(4)  // Ограничиваем количество фильмов
-            ->get();
-    }
 }
 

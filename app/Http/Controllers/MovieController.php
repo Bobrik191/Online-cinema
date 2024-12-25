@@ -6,7 +6,7 @@ use App\Repositories\MovieRepository;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Models\Movie;
-use App\Models\MovieView; // Не забудьте подключить модель MovieView
+use App\Models\MovieView;
 use Illuminate\Support\Facades\Auth;
 
 class MovieController extends Controller
@@ -20,15 +20,12 @@ class MovieController extends Controller
 
     public function show($id)
     {
-        // Получаем фильм по ID
         $movie = Movie::find($id);
 
-        // Получаем жанры текущего фильма (массив идентификаторов жанров)
-        $genreIds = $movie->genres->pluck('id'); // Плоский список ID жанров
+        $genreIds = $movie->genres->pluck('id');
 
-        // Получаем фильмы с хотя бы одним совпадающим жанром (исключая текущий фильм)
         $recommendedMovies = Movie::whereHas('genres', function ($query) use ($genreIds) {
-            $query->whereIn('genres.id', $genreIds); // Фильмы с хотя бы одним совпадающим жанром
+            $query->whereIn('genres.id', $genreIds);
         })
             ->where('id', '!=', $id)
             ->limit(4)
@@ -49,5 +46,36 @@ class MovieController extends Controller
         ]);
     }
 
+    public function recommend()
+    {
+        $user = Auth::user();
 
+        // Отримати всі жанри, пов’язані з переглянутими фільмами
+        $viewedGenres = MovieView::where('user_id', $user->id)
+            ->with('movie.genres')
+            ->get()
+            ->flatMap(fn($view) => $view->movie->genres->pluck('id'))
+            ->countBy()
+            ->sortDesc();
+
+        if ($viewedGenres->isEmpty()) {
+            // Якщо немає історії переглядів, повертаємо найпопулярніші фільми
+            $recommendedMovies = Movie::orderBy('popularity', 'desc')->take(10)->get();
+        } else {
+            // Рекомендуємо фільми за жанрами
+            $recommendedMovies = Movie::whereHas('genres', function ($query) use ($viewedGenres) {
+                $query->whereIn('genres.id', $viewedGenres->keys());
+            })
+                ->whereDoesntHave('views', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                })
+                ->orderBy('popularity', 'desc')
+                ->take(10)
+                ->get();
+        }
+
+        return Inertia::render('Recommendations', [
+            'movies' => $recommendedMovies,
+        ]);
+    }
 }

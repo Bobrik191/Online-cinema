@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('movie_views', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Связь с пользователем
-            $table->foreignId('movie_id')->constrained()->onDelete('cascade'); // Связь с фильмом
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('movie_id')->constrained()->onDelete('cascade');
             $table->timestamp('viewed_at')->useCurrent(); // Время просмотра
             $table->timestamps();
         });

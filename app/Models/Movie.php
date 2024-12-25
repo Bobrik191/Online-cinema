@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Movie extends Model
 {
@@ -32,5 +33,10 @@ class Movie extends Model
             'genre_id',
             relatedKey: 'genre_id'
         );
+    }
+
+    public function views(): HasMany
+    {
+        return $this->hasMany(MovieView::class);
     }
 }

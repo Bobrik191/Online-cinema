@@ -97,7 +97,6 @@ export default function Login({ status, canResetPassword }) {
                 </div>
             </form>
 
-            {/* Кнопка на страницу регистрации */}
             <div className="mt-6 text-center">
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                     Don't have an account??{' '}

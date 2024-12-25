@@ -26,6 +26,8 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::middleware(['auth'])->get('/recommendations', [MovieController::class, 'recommend'])->name('movies.recommend');
+
 Route::get('/history', [ProfileController::class, 'showHistory'])->middleware('auth')->name('history');
 
 Route::middleware('auth')->group(function () {

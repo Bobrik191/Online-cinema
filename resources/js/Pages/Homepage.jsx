@@ -6,13 +6,11 @@ import Footer from '@/Components/Footer/Footer.jsx';
 function Homepage({ movies }) {
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedGenre, setSelectedGenre] = useState('All movies');
-    const [searchQuery, setSearchQuery] = useState(''); // Поисковый запрос
+    const [searchQuery, setSearchQuery] = useState('');
     const itemsPerPage = 6;
 
-    // Извлекаем уникальные жанры из всех фильмов
     const allGenres = Array.from(new Set(movies.flatMap((movie) => movie.genres.map((genre) => genre.name))));
 
-    // Фильтруем фильмы по жанру и поисковому запросу
     const filteredMovies = movies.filter((movie) => {
         const matchesGenre = selectedGenre === 'All movies' || movie.genres.some((genre) => genre.name === selectedGenre);
         const matchesSearch = movie.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -29,15 +27,14 @@ function Homepage({ movies }) {
 
     const handleGenreSelect = (genre) => {
         setSelectedGenre(genre);
-        setCurrentPage(1); // Сброс страницы при смене жанра
+        setCurrentPage(1);
     };
 
     return (
         <div style={{ backgroundColor: '#f4f6f9', minHeight: '100vh' }}>
-            <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} /> {/* Передаем в Header запрос поиска */}
+            <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
 
             <Box sx={{ mt: 10 }}>
-                {/* Панель жанров */}
                 <Box sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 2, mb: 3 }}>
                     <Chip
                         label="All movies"
@@ -72,7 +69,6 @@ function Homepage({ movies }) {
                     ))}
                 </Box>
 
-                {/* Список фильмов */}
                 <Grid container spacing={4} justifyContent="center">
                     {currentMovies.map((movie) => (
                         <Grid item key={movie.id} xs={12} sm={6} md={4}>
@@ -92,16 +88,19 @@ function Homepage({ movies }) {
                                     boxShadow: 15,
                                 }
                             }}>
-                                {/* Ссылка на компонент с деталями фильма */}
                                 <a href={`/movie/${movie.id}`} style={{ textDecoration: 'none' }}>
                                     <CardMedia
                                         component="img"
-                                        image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                                        image={
+                                            movie.poster_path.includes('http')
+                                                ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` // Внешняя картинка
+                                                : `http://127.0.0.1:8000/storage/${movie.poster_path}` // Локальная картинка
+                                        }
                                         alt={movie.title}
                                         sx={{
                                             width: '100%',
-                                            height: 350, // Увеличиваем высоту картинки
-                                            objectFit: 'cover', // Изменение на 'cover' для растягивания по всей карточке
+                                            height: 350,
+                                            objectFit: 'cover',
                                         }}
                                     />
                                     <CardContent sx={{ flexGrow: 1, p: 2 }}>

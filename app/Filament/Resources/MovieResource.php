@@ -34,15 +34,14 @@ class MovieResource extends Resource
                 TextInput::make('title')->required(),
                 Forms\Components\Textarea::make('description')->required(),
                 Forms\Components\TextInput::make('popularity')->required()->numeric(),
-                Forms\Components\FileUpload::make('poster_path'),
+                Forms\Components\FileUpload::make('poster_path')->image(),
                 DatePicker::make('release_date')->required(),
                 Forms\Components\TextInput::make('vote_average')->required()->numeric(),
                 Forms\Components\TextInput::make('vote_count')->required()->integer(),
                 TextInput::make('video_links')->required(),
                 Select::make('genres')
                     ->relationship('genres', 'name')
-                    ->multiple()
-                    ->required(),
+                    ->multiple(),
             ]);
     }
 

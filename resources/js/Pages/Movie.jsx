@@ -5,10 +5,9 @@ import Header from '@/Components/Header/Header.jsx';
 function Movie({ movie, recommendedMovies }) {
     const formattedDate = new Date(movie.release_date).toLocaleDateString();
 
-    // Функция для отображения плеера трейлера
     const renderTrailerPlayer = (videoId) => {
-        if (!videoId) {
-            return <Typography variant="body1" color="textSecondary">No video available.</Typography>;
+        if (typeof videoId !== 'string') {
+            return <Typography variant="body1" color="textSecondary">Invalid video ID format.</Typography>;
         }
         return (
             <Box textAlign="center" marginBottom="40px" style={{ marginTop: '40px' }}>
@@ -29,6 +28,15 @@ function Movie({ movie, recommendedMovies }) {
         );
     };
 
+    const getFirstVideoLink = (videoLinks) => {
+        if (typeof videoLinks === 'string') {
+            return videoLinks.split(',').map((link) => link.trim())[0];
+        }
+        return videoLinks[0];
+    };
+
+    const firstVideoLink = getFirstVideoLink(movie.video_links);
+
     return (
         <div style={{ padding: '40px 20px', backgroundColor: '#fafafa' }}>
             <Header />
@@ -40,7 +48,9 @@ function Movie({ movie, recommendedMovies }) {
                                 {movie.title}
                             </Typography>
                             <img
-                                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                                src={movie.poster_path.includes('http')
+                                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`  // Внешняя картинка
+                                    : `http://127.0.0.1:8000/storage/${movie.poster_path}`}   // Локальная картинка
                                 alt={movie.title}
                                 style={{
                                     maxWidth: '100%',
@@ -97,9 +107,9 @@ function Movie({ movie, recommendedMovies }) {
                         </Grid>
                     </Grid>
 
-                    {/* Плеер для трейлера */}
-                    {movie.video_links && movie.video_links.length > 0 ? (
-                        renderTrailerPlayer(movie.video_links[0])
+                    {/* Рендерим только первый трейлер */}
+                    {firstVideoLink ? (
+                        renderTrailerPlayer(firstVideoLink)
                     ) : (
                         <Typography variant="body1" color="textSecondary">No trailer available.</Typography>
                     )}
@@ -139,53 +149,6 @@ function Movie({ movie, recommendedMovies }) {
                                                             transition: 'transform 0.3s ease',
                                                         }}
                                                     />
-
-                                                    {/* Оверлей, который появляется при наведении */}
-                                                    <Box
-                                                        sx={{
-                                                            position: 'absolute',
-                                                            top: 0,
-                                                            left: 0,
-                                                            right: 0,
-                                                            bottom: 0,
-                                                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                                                            color: '#fff',
-                                                            opacity: 0,
-                                                            display: 'flex',
-                                                            flexDirection: 'column',
-                                                            justifyContent: 'center',
-                                                            alignItems: 'center',
-                                                            padding: '20px',
-                                                            transition: 'opacity 0.3s ease',
-                                                            '&:hover': {
-                                                                opacity: 1,
-                                                            },
-                                                        }}
-                                                    >
-                                                        <Typography variant="h6" style={{ fontWeight: 'bold' }}>
-                                                            {recommendedMovie.title}
-                                                        </Typography>
-
-                                                        <Box style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-                                                            {recommendedMovie.genres && recommendedMovie.genres.length > 0 && recommendedMovie.genres.map((genre, index) => (
-                                                                <Button
-                                                                    key={index}
-                                                                    variant="outlined"
-                                                                    color="secondary"
-                                                                    style={{
-                                                                        marginRight: '8px',
-                                                                        marginBottom: '8px',
-                                                                        padding: '6px 12px',
-                                                                        borderRadius: '16px',
-                                                                        fontWeight: 'bold',
-                                                                        textTransform: 'none',
-                                                                    }}
-                                                                >
-                                                                    {genre.name}
-                                                                </Button>
-                                                            ))}
-                                                        </Box>
-                                                    </Box>
                                                 </Box>
                                             </a>
                                         </Grid>

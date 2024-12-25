@@ -23,7 +23,6 @@ function History({ history }) {
                         </Grid>
                     </Grid>
 
-                    {/* История просмотров */}
                     {history.length > 0 ? (
                         <Grid container spacing={6} style={{ marginTop: '40px' }}>
                             {history.map((item) => (
@@ -47,7 +46,11 @@ function History({ history }) {
                                             }}
                                         >
                                             <img
-                                                src={`https://image.tmdb.org/t/p/w500${item.movie.poster_path}`}
+                                                src={
+                                                    item.movie.poster_path.includes('http')
+                                                        ? `https://image.tmdb.org/t/p/w500${item.movie.poster_path}`
+                                                        : `http://127.0.0.1:8000/storage/${item.movie.poster_path}`
+                                                }
                                                 alt={item.movie.title}
                                                 style={{
                                                     width: '100%',
@@ -57,7 +60,6 @@ function History({ history }) {
                                                 }}
                                             />
 
-                                            {/* Оверлей, который появляется при наведении */}
                                             <Box
                                                 sx={{
                                                     position: 'absolute',
@@ -84,7 +86,7 @@ function History({ history }) {
                                                 </Typography>
 
                                                 <Typography variant="body2" style={{ marginTop: '8px' }}>
-                                                    Просмотрено: {new Date(item.viewed_at).toLocaleString()}
+                                                    Watched: {new Date(item.viewed_at).toLocaleString()}
                                                 </Typography>
                                             </Box>
                                         </Box>
@@ -94,7 +96,7 @@ function History({ history }) {
                         </Grid>
                     ) : (
                         <Typography variant="body1" color="textSecondary">
-                            Нет истории просмотров.
+                            No watching history.
                         </Typography>
                     )}
                 </Container>

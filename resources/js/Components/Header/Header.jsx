@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Typography, Button, Menu, MenuItem, TextField, Box } f
 import { Link, usePage } from '@inertiajs/react';
 
 export default function Header({ searchQuery, setSearchQuery }) {
-    const { auth } = usePage().props; // Get current user information
+    const { auth } = usePage().props;
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = Boolean(anchorEl);
 
@@ -19,7 +19,6 @@ export default function Header({ searchQuery, setSearchQuery }) {
         <AppBar position="fixed" sx={{ top: 0, width: '100%', backgroundColor: '#1E1E1E', boxShadow: 3 }}>
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 
-                {/* Logo Block */}
                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                     <Link href="/" style={{ textDecoration: 'none' }}>
                         <Typography
@@ -39,7 +38,6 @@ export default function Header({ searchQuery, setSearchQuery }) {
                     </Link>
                 </Box>
 
-                {/* Search Block */}
                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                     <TextField
                         variant="outlined"
@@ -66,7 +64,6 @@ export default function Header({ searchQuery, setSearchQuery }) {
                     />
                 </Box>
 
-                {/* Auth Buttons Block */}
                 <Box>
                     {auth ? (
                         <div>
@@ -98,6 +95,12 @@ export default function Header({ searchQuery, setSearchQuery }) {
                             >
                                 <MenuItem component={Link} href="/profile" sx={{ color: '#fff' }}>
                                     Profile
+                                </MenuItem>
+                                <MenuItem component={Link} href="/recommendations" sx={{ color: '#fff' }}>
+                                    Recommended
+                                </MenuItem>
+                                <MenuItem component={Link} href="/history" sx={{ color: '#fff' }}>
+                                    History
                                 </MenuItem>
                                 <MenuItem
                                     component={Link}
