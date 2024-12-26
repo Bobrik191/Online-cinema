@@ -96,6 +96,9 @@ export default function Header({ searchQuery, setSearchQuery }) {
                                 <MenuItem component={Link} href="/profile" sx={{ color: '#fff' }}>
                                     Profile
                                 </MenuItem>
+                                <MenuItem component={Link} href="/favorites" sx={{ color: '#fff' }}>
+                                    Favorites
+                                </MenuItem>
                                 <MenuItem component={Link} href="/recommendations" sx={{ color: '#fff' }}>
                                     Recommended
                                 </MenuItem>

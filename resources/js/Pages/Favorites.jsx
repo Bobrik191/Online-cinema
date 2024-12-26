@@ -1,8 +1,8 @@
 import React from 'react';
-import { Container, Grid, Typography, Box } from '@mui/material';
+import { Container, Grid, Typography, Box, Button } from '@mui/material';
 import Header from '@/Components/Header/Header.jsx';
 
-function Recommendations({ movies }) {
+function Favorites({ favorites }) {
     return (
         <div style={{ padding: '40px 20px', backgroundColor: '#fafafa' }}>
             <Header />
@@ -18,17 +18,17 @@ function Recommendations({ movies }) {
                                     color: '#333',
                                 }}
                             >
-                                Recommended Movies
+                                Favorite Movies
                             </Typography>
                         </Grid>
                     </Grid>
 
-                    {movies.length > 0 ? (
+                    {favorites.length > 0 ? (
                         <Grid container spacing={6} style={{ marginTop: '40px' }}>
-                            {movies.map((movie) => (
-                                <Grid item md={3} sm={4} xs={12} key={movie.id}>
+                            {favorites.map((item) => (
+                                <Grid item md={3} sm={4} xs={12} key={item.id}>
                                     <a
-                                        href={`/movie/${movie.id}`}
+                                        href={`/movie/${item.movie.id}`}
                                         style={{ textDecoration: 'none' }}
                                     >
                                         <Box
@@ -47,11 +47,11 @@ function Recommendations({ movies }) {
                                         >
                                             <img
                                                 src={
-                                                    movie.poster_path.includes('http')
-                                                        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-                                                        : `http://127.0.0.1:8000/storage/${movie.poster_path}`
+                                                    item.movie.poster_path.includes('http')
+                                                        ? `https://image.tmdb.org/t/p/w500${item.movie.poster_path}`
+                                                        : `http://127.0.0.1:8000/storage/${item.movie.poster_path}`
                                                 }
-                                                alt={movie.title}
+                                                alt={item.movie.title}
                                                 style={{
                                                     width: '100%',
                                                     height: '100%',
@@ -82,7 +82,7 @@ function Recommendations({ movies }) {
                                                 }}
                                             >
                                                 <Typography variant="h6" style={{ fontWeight: 'bold' }}>
-                                                    {movie.title}
+                                                    {item.movie.title}
                                                 </Typography>
                                             </Box>
                                         </Box>
@@ -92,7 +92,7 @@ function Recommendations({ movies }) {
                         </Grid>
                     ) : (
                         <Typography variant="body1" color="textSecondary">
-                            No recommendations available.
+                            No favorite movies added yet.
                         </Typography>
                     )}
                 </Container>
@@ -101,4 +101,4 @@ function Recommendations({ movies }) {
     );
 }
 
-export default Recommendations;
+export default Favorites;

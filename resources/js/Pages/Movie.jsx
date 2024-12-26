@@ -1,9 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Grid, Typography, Box, Button } from '@mui/material';
 import Header from '@/Components/Header/Header.jsx';
+import axios from 'axios';
 
 function Movie({ movie, recommendedMovies }) {
+    const [isFavorite, setIsFavorite] = useState(false);
     const formattedDate = new Date(movie.release_date).toLocaleDateString();
+
+    useEffect(() => {
+        axios.get(`/movie/${movie.id}/check-favorite`)
+            .then(response => {
+                setIsFavorite(response.data.isFavorite);
+            })
+            .catch(error => {
+                console.error('Error checking if the movie is a favorite:', error);
+            });
+    }, [movie.id]);
+
+    const addToFavorites = () => {
+        axios.post(`/movie/${movie.id}/favorite`)
+            .then(() => {
+                setIsFavorite(true);
+            })
+            .catch(() => {
+                console.error('Error adding movie to favorites');
+            });
+    };
+
+    const removeFromFavorites = () => {
+        axios.delete(`/movie/${movie.id}/favorite`)
+            .then(() => {
+                setIsFavorite(false);
+            })
+            .catch(() => {
+                console.error('Error removing movie from favorites');
+            });
+    };
 
     const renderTrailerPlayer = (videoId) => {
         if (typeof videoId !== 'string') {
@@ -49,8 +81,8 @@ function Movie({ movie, recommendedMovies }) {
                             </Typography>
                             <img
                                 src={movie.poster_path.includes('http')
-                                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`  // Внешняя картинка
-                                    : `http://127.0.0.1:8000/storage/${movie.poster_path}`}   // Локальная картинка
+                                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                                    : `http://127.0.0.1:8000/storage/${movie.poster_path}`}
                                 alt={movie.title}
                                 style={{
                                     maxWidth: '100%',
@@ -76,50 +108,65 @@ function Movie({ movie, recommendedMovies }) {
                                 <Typography variant="body1" style={{ marginBottom: '8px', color: '#777' }}>Popularity: {movie.popularity}</Typography>
                                 <Typography variant="body1" style={{ marginBottom: '8px', color: '#777' }}>Average Rating: {movie.vote_average}</Typography>
                                 <Typography variant="body1" style={{ marginBottom: '16px', color: '#777' }}>Vote Count: {movie.vote_count}</Typography>
-
-                                <Typography variant="h6" style={{ marginBottom: '8px', fontWeight: 'bold', color: '#333' }}>
-                                    Genres
-                                </Typography>
-                                <Box style={{ marginBottom: '24px' }}>
-                                    {movie.genres && movie.genres.length > 0 ? (
-                                        movie.genres.map((genre, index) => (
-                                            <Button
-                                                key={index}
-                                                variant="outlined"
-                                                color="primary"
-                                                style={{
-                                                    marginRight: '8px',
-                                                    marginBottom: '8px',
-                                                    padding: '6px 12px',
-                                                    borderRadius: '16px',
-                                                    fontWeight: 'bold',
-                                                    textTransform: 'none',
-                                                }}
-                                            >
-                                                {genre.name}
-                                            </Button>
-                                        ))
-                                    ) : (
-                                        <Typography variant="body2" color="textSecondary">No genres available.</Typography>
-                                    )}
-                                </Box>
                             </Box>
                         </Grid>
                     </Grid>
 
-                    {/* Рендерим только первый трейлер */}
                     {firstVideoLink ? (
                         renderTrailerPlayer(firstVideoLink)
                     ) : (
                         <Typography variant="body1" color="textSecondary">No trailer available.</Typography>
                     )}
 
-                    {/* Рекомендованные фильмы */}
+                    <Box textAlign="center" style={{ marginTop: '20px' }}>
+                        {isFavorite ? (
+                            <Button
+                                onClick={removeFromFavorites}
+                                variant="contained"
+                                color="secondary"
+                                style={{
+                                    fontSize: '16px',
+                                    padding: '10px 20px',
+                                    borderRadius: '25px',
+                                    fontWeight: 'bold',
+                                    textTransform: 'none',
+                                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                                    backgroundColor: '#e57373',
+                                    '&:hover': {
+                                        backgroundColor: '#d32f2f',
+                                    }
+                                }}
+                            >
+                                Remove from Favorites
+                            </Button>
+                        ) : (
+                            <Button
+                                onClick={addToFavorites}
+                                variant="contained"
+                                color="primary"
+                                style={{
+                                    fontSize: '16px',
+                                    padding: '10px 20px',
+                                    borderRadius: '25px',
+                                    fontWeight: 'bold',
+                                    textTransform: 'none',
+                                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                                    backgroundColor: '#81c784',
+                                    '&:hover': {
+                                        backgroundColor: '#66bb6a',
+                                    }
+                                }}
+                            >
+                                Add to Favorites
+                            </Button>
+                        )}
+                    </Box>
+
                     {recommendedMovies.length > 0 && (
                         <Grid container spacing={6} style={{ marginTop: '40px' }}>
                             <Grid item xs={12}>
-                                <Typography variant="h5" style={{ marginBottom: '16px', fontWeight: 'bold', color: '#333' }}>
-                                    Recommended Movies
+                                <Typography variant="h5" style={{ marginBottom: '16px', fontWeight: 'bold', color: '#333' }} >
+                                    Watching with this movie
                                 </Typography>
                                 <Grid container spacing={3}>
                                     {recommendedMovies.map((recommendedMovie) => (
@@ -149,6 +196,19 @@ function Movie({ movie, recommendedMovies }) {
                                                             transition: 'transform 0.3s ease',
                                                         }}
                                                     />
+                                                    <Typography
+                                                        variant="body2"
+                                                        style={{
+                                                            position: 'absolute',
+                                                            bottom: '10px',
+                                                            left: '10px',
+                                                            color: 'white',
+                                                            fontWeight: 'bold',
+                                                            textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
+                                                        }}
+                                                    >
+                                                        {recommendedMovie.title}
+                                                    </Typography>
                                                 </Box>
                                             </a>
                                         </Grid>

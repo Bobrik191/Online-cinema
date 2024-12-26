@@ -7,6 +7,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\RecommendationController;
 
 //Route::get('/', function () {
 //    if (Auth::check()) {
@@ -36,6 +38,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware('auth')->group(function () {
+    Route::post('/movie/{id}/favorite', [FavoriteController::class, 'addToFavorites']);
+    Route::delete('/movie/{id}/favorite', [FavoriteController::class, 'removeFromFavorites']);
+    Route::get('/favorites', [FavoriteController::class, 'showFavoritesPage']);
+});
+
+Route::get('/movie/{movieId}/check-favorite', [FavoriteController::class, 'checkFavorite']);
+
+Route::middleware('auth')->get('/recommendations', [RecommendationController::class, 'recommend'])->name('movies.recommend');
 
 Route::get('/info', function () {
     return Inertia::render('Welcome', [
