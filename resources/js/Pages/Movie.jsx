@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Grid, Typography, Box, Button } from '@mui/material';
+import { Container, Grid, Typography, Box, Button, Chip } from '@mui/material';
 import Header from '@/Components/Header/Header.jsx';
 import axios from 'axios';
 
@@ -108,6 +108,22 @@ function Movie({ movie, recommendedMovies }) {
                                 <Typography variant="body1" style={{ marginBottom: '8px', color: '#777' }}>Popularity: {movie.popularity}</Typography>
                                 <Typography variant="body1" style={{ marginBottom: '8px', color: '#777' }}>Average Rating: {movie.vote_average}</Typography>
                                 <Typography variant="body1" style={{ marginBottom: '16px', color: '#777' }}>Vote Count: {movie.vote_count}</Typography>
+                                <Box style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+                                    {movie.genres && movie.genres.length > 0
+                                        ? movie.genres.map(genre => (
+                                            <Chip
+                                                key={genre.id}
+                                                label={genre.name}
+                                                style={{
+                                                    backgroundColor: '#e0f7fa',
+                                                    color: '#00796b',
+                                                    fontWeight: 'bold',
+                                                    borderRadius: '16px',
+                                                }}
+                                            />
+                                        ))
+                                        : <Typography variant="body1" style={{ color: '#777' }}>No genres available</Typography>}
+                                </Box>
                             </Box>
                         </Grid>
                     </Grid>
